@@ -1,27 +1,50 @@
 {
-  "name": "portfolio",
-  "version": "0.1.0",
+  "name": "xinyi-li-portfolio",
+  "version": "1.0.0",
   "private": true,
+  "description": "Personal portfolio website of Xinyi Li - Software Engineer & Full-Stack Developer",
+  "author": "Xinyi Li <xinyiade@umich.edu>",
+  "homepage": "https://xinyi-li.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AdelineXinyi/portfolio.git"
+  },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.5"
+    "next": "14.0.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lucide-react": "^0.263.1"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.5",
-    "@eslint/eslintrc": "^3"
-  }
+    "typescript": "^5.3.2",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "eslint": "^8.54.0",
+    "eslint-config-next": "14.0.4"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "portfolio",
+    "xinyi-li",
+    "software-engineer",
+    "full-stack-developer",
+    "react",
+    "nextjs",
+    "typescript",
+    "tailwindcss"
+  ]
 }
