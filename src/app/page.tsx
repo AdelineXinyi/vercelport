@@ -26,6 +26,7 @@ interface Experience {
   location?: string;
   period: string;
   description: string[];
+  logo: string;
 }
 
 interface Project {
@@ -35,6 +36,17 @@ interface Project {
   githubUrl?: string;
   liveUrl?: string;
   featured: boolean;
+}
+
+interface Education {
+  institution: string;
+  location: string;
+  degree: string;
+  major: string;
+  period: string;
+  gpa: string;
+  courses?: string[];
+  logo: string;
 }
 
 // 定义 ActiveTab 类型
@@ -106,43 +118,87 @@ export default function Home() {
 
   const experiences: Experience[] = [
     {
-      company: 'Tech Company',
-      role: 'Software Engineer Intern',
-      location: 'San Francisco, CA',
-      period: 'Jun. 2024 - Aug. 2024',
+      company: 'U-M Information and Technology Services - Data Integration',
+      role: 'DevOps Intern',
+      location: 'Ann Arbor, MN',
+      period: 'May 2025 - August 2025',
       description: [
-        'Developed full-stack web applications using React.js and Node.js.',
-        'Collaborated with cross-functional teams to deliver high-quality software solutions.',
-        'Implemented responsive UI components and optimized application performance.'
-      ]
+       'To be updated'
+      ],
+      logo: 'https://img.logo.dev/umich.edu?token=pk_L9-3-m3iR3qwyR9kIxfelA',
     },
     {
-      company: 'University Research Lab',
-      role: 'Research Assistant',
-      location: 'University Campus',
-      period: 'Sep. 2023 - May. 2024',
+      company: 'Glimpse Diagnostic LLC',
+      role: 'Data Engineer Intern',
+      location: 'Arden Hills, MN',
+      period: 'May 2023 - August 2023',
       description: [
-        'Conducted research on machine learning algorithms and data analysis.',
-        'Published research findings and presented at academic conferences.'
-      ]
+        'Built generative adversarial networks model using Tensorflow and PyTorch in AWS Sagemaker to augment synthetic children tympanic membrane images from 726 to 2000 for training abnormal tympanic membrane recognition',
+        'Optimized quality metrics including Fréchet Inception Distance(FID) derived during model training process to classify images under cross validation to enable an effective diagnostic source for medical practitioners',
+        'Pre-processed image samples using NumPy and TensorFlow (keras) for image transformation (resizing, color uniforming) and utilized CUDA for GPU acceleration to optimize model training efficiency'
+      ],
+      logo: 'https://img.logo.dev/glimpsediagnostics.com?token=pk_L9-3-m3iR3qwyR9kIxfelA',
+    },
+    {
+      company: 'Statistics Online Computational Resource (SOCR) Lab - University of Michigan',
+      role: 'Undergrad Research Assistant',
+      location: 'Ann Arbor, MI',
+      period: 'May 2024 - Jan 2025',
+      description: [
+        'Run supervised and unsupervised classification to see if any experiment group cluster emerge on recasted clinical datasets (conditional mouse treatment) in R and Python',
+        'Work on the deployment of applications on a Nursery School compute server and AWS S3, streamlining automated healthcare privacy document management in collaboration with Prof. Ivo Dinov\'s team'
+      ],
+      logo: 'https://img.logo.dev/umich.edu?token=pk_L9-3-m3iR3qwyR9kIxfelA',
     }
   ];
 
   const projects: Project[] = [
     {
-      name: 'E-Commerce Platform',
-      description: 'A full-stack e-commerce website with user authentication, shopping cart, and payment integration.',
-      techStack: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-      githubUrl: 'https://github.com/AdelineXinyi/ecommerce-platform',
-      liveUrl: 'https://ecommerce-demo.vercel.app',
+      name: 'Instagram Ads Generator',
+      description: 'Fine-tuned multiple instruction-tuned LLMs (LLaMA-3.1-8B, Qwen2.5-7B, Mistral-7B) using LoRA with 4-bit quantization and Flash Attention 2 to efficiently learn influencer-specific writing styles on a single A100 GPU',
+      techStack: ['LLaMA-3.1-8B', 'Qwen2.5-7B', 'Mistral-7B', 'LoRA', 'SBERT', 'FAISS', 'GPT'],
       featured: true
     },
     {
-      name: 'Data Visualization Dashboard',
-      description: 'Interactive dashboard for analyzing and visualizing large datasets with multiple chart types.',
-      techStack: ['Vue.js', 'D3.js', 'Python', 'Flask'],
-      githubUrl: 'https://github.com/AdelineXinyi/data-dashboard',
+      name: 'Facebook Clone Database System',
+      description: 'Engineered a relational database system with 40% improved query efficiency, Java application development for processing 10,000+ records with 95% reduced response time, and a SQL-to-MongoDB data pipeline achieving 60% faster retrieval for complex hierarchical data.',
+      techStack: ['Oracle SQL', 'Java', 'MongoDB'],
       featured: true
+    },
+    {
+      name: 'Instagram-like Web App',
+      description: 'Developed a full-stack Instagram-like web app with user authentication, file uploads, likes, comments, and follow/unfollow features. Built a RESTful API, integrated AJAX for dynamic updates, and optimized the frontend for a responsive single-page application experience.',
+      techStack: ['JavaScript', 'SQLite3', 'HTML', 'Flask', 'Python', 'React.js', 'AWS EC2'],
+      githubUrl: 'https://github.com/AdelineXinyi/instagram-clone',
+      featured: false
+    },
+    {
+      name: 'MapReduce Search Engine',
+      description: 'Developed a distributed MapReduce system on Hadoop for efficient master-worker coordination and parallel task execution. Optimized job scheduling and resource allocation across nodes to improve throughput, reduce latency, and enhance fault tolerance.',
+      techStack: ['Python', 'Hadoop', 'MapReduce'],
+      featured: false
+    }
+  ];
+
+  const education: Education[] = [
+    {
+      institution: 'University of Michigan-Ann Arbor',
+      location: 'Ann Arbor, MI',
+      degree: 'B.S',
+      major: 'Computer Science',
+      period: 'Aug 2023 - Dec 2025',
+      gpa: '3.86/4.0',
+      logo: 'https://img.logo.dev/umich.edu?token=pk_L9-3-m3iR3qwyR9kIxfelA',
+    },
+    {
+      institution: 'Macalester College',
+      location: 'Saint Paul, MN',
+      degree: 'B.S',
+      major: 'Economics',
+      period: 'Aug 2021 - May 2023',
+      gpa: '4.0/4.0',
+      logo: 'https://img.logo.dev/macalester.edu?token=pk_L9-3-m3iR3qwyR9kIxfelA',
+      courses: ['Data Structure & Algorithm', 'Object-Oriented Programming', 'Computer Organization', 'Advanced Regression', 'Web Systems', 'Natural Language Processing', 'Machine Learning', 'Database Management Systems']
     }
   ];
 
@@ -153,25 +209,29 @@ export default function Home() {
         <div>
           <h1 className="text-5xl font-bold text-white mb-4">Xinyi Li</h1>
           <p className="text-xl text-gray-300 mb-2">Software Engineer & Full-Stack Developer</p>
-          <p className="text-gray-400 flex items-center gap-2">
+          <p className="text-white flex items-center gap-2">
             <MapPin size={16} />
             Ann Arbor, Michigan, United States
+          </p>
+          <p className="text-white flex items-center gap-2">
+            <MapPin size={16} />
+            Guizhou & Shanghai, China
           </p>
         </div>
 
         {/* Social Links */}
         <div className="flex gap-4">
-          <a href="mailto:xinyi.li@example.com" className="transform hover:scale-110 transition-transform duration-200">
+          <a href="mailto:xinyiade@umich.edu" className="transform hover:scale-110 transition-transform duration-200">
             <Mail className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors" />
           </a>
           <a href="https://linkedin.com/in/xinyi-li" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200">
-            <Linkedin className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <Linkedin className="w-6 h-6 text-white hover:text-white cursor-pointer transition-colors" />
           </a>
           <a href="https://github.com/AdelineXinyi" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200">
-            <Github className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <Github className="w-6 h-6 text-white hover:text-white cursor-pointer transition-colors" />
           </a>
           <a href="https://leetcode.com/u/xinyiaddie/" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200" title="LeetCode Profile">
-            <div className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors flex items-center justify-center">
+            <div className="w-6 h-6 text-white hover:text-white cursor-pointer transition-colors flex items-center justify-center">
               <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
                 <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-2.8-2.265-6.942-1.985-9.383.641l-2.03 2.716L5.45 6.702l.65-.694c.79-.844 2.301-1.248 3.538-.955 1.25.297 2.457 1.184 2.457 1.184s.787.672 1.747.672c1.178 0 2.066-1.07 1.747-2.3-.318-1.23-1.747-2.3-1.747-2.3S11.5.797 9.66.797 6.25 2.125 6.25 2.125L13.483 0z"/>
               </svg>
@@ -205,7 +265,7 @@ export default function Home() {
             onClick={() => setActiveTab('projects')}
             className="px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105"
             style={{
-              backgroundColor: activeTab === 'projects' ? '#8b5cf6' : '#374151',
+              backgroundColor: activeTab === 'projects' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)',
               color: '#ffffff'
             }}
             onMouseEnter={(e) => {
@@ -215,7 +275,7 @@ export default function Home() {
               e.currentTarget.style.border = '2px solid white';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeTab === 'projects' ? '#8b5cf6' : '#374151';
+              e.currentTarget.style.backgroundColor = activeTab === 'projects' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)';
               e.currentTarget.style.border = 'none';
             }}
           >
@@ -225,7 +285,7 @@ export default function Home() {
             onClick={() => setActiveTab('resume')}
             className="px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105"
             style={{
-              backgroundColor: activeTab === 'resume' ? '#8b5cf6' : '#374151',
+              backgroundColor: activeTab === 'resume' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)',
               color: '#ffffff'
             }}
             onMouseEnter={(e) => {
@@ -235,7 +295,7 @@ export default function Home() {
               e.currentTarget.style.border = '2px solid white';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeTab === 'resume' ? '#8b5cf6' : '#374151';
+              e.currentTarget.style.backgroundColor = activeTab === 'resume' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)';
               e.currentTarget.style.border = 'none';
             }}
           >
@@ -346,10 +406,10 @@ export default function Home() {
        
         
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-white">
             {githubData ? `${githubData.public_repos} repositories` : 'Loading repositories...'}
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-white">
             30 contributions in the last year
           </p>
         </div>
@@ -379,7 +439,7 @@ export default function Home() {
       }}
     >
       <h2 className="text-2xl font-bold text-white mb-6">About Me:</h2>
-      <div className="space-y-4 text-gray-300 leading-relaxed">
+      <div className="space-y-4 text-white leading-relaxed">
         <p>
           Hi, I'm Xinyi Li, a passionate software engineer with a strong background in full-stack development and a keen interest in creating innovative solutions that make a positive impact.
         </p>
@@ -393,44 +453,78 @@ export default function Home() {
     </div>
   );
 
-  const renderExperienceSection = () => (
-    <div 
-      className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
-      style={{ maxWidth: '48rem' }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.border = '2px solid white';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.border = 'none';
-      }}
-    >
-      <h2 className="text-2xl font-bold text-white mb-8">Experience:</h2>
-      
-      <div className="space-y-12">
-        {experiences.map((exp, index) => (
-          <div key={index} className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-purple-600 rounded flex items-center justify-center text-white font-bold text-sm">
-                {exp.company.charAt(0)}
+  const renderExperienceSection = () => {
+    const [showAll, setShowAll] = useState(false);
+    const displayedExperiences = showAll ? experiences : experiences.slice(0, 2);
+    
+    return (
+      <div 
+        className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+        style={{ maxWidth: '48rem' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.border = '2px solid white';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.border = 'none';
+        }}
+      >
+        <h2 className="text-2xl font-bold text-white mb-8">Experience:</h2>
+        
+        <div className="space-y-12">
+          {displayedExperiences.map((exp, index) => (
+            <div key={index} className="space-y-6">
+              <div className="flex items-center gap-3">
+                {/* 公司 logo */}
+                <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
+                  <img 
+                    src={exp.logo} 
+                    alt={`${exp.company} logo`} 
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      // 如果 logo 加载失败，显示首字母
+                      e.currentTarget.style.display = 'none';
+                      const nextElement = e.currentTarget.nextElementSibling;
+                      if (nextElement) {
+                        (nextElement as HTMLElement).style.display = 'flex';
+                      }
+                    }}
+                  />
+                  <div className="w-full h-full bg-purple-600 rounded flex items-center justify-center text-white font-bold text-sm" style={{display: 'none'}}>
+                    {exp.company.charAt(0)}
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold text-white">{exp.company}</h3>
               </div>
-              <h3 className="text-xl font-semibold text-white">{exp.company}</h3>
-            </div>
-            
-            <div className="flex flex-wrap gap-4 text-sm">
-              <span 
-                className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#4b5563';
-                  e.currentTarget.style.border = '1px solid white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
-                  e.currentTarget.style.border = 'none';
-                }}
-              >
-                {exp.role}
-              </span>
-              {exp.location && (
+              
+              <div className="flex flex-wrap gap-4 text-sm">
+                <span 
+                  className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#4b5563';
+                    e.currentTarget.style.border = '1px solid white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                    e.currentTarget.style.border = 'none';
+                  }}
+                >
+                  {exp.role}
+                </span>
+                {exp.location && (
+                  <span 
+                    className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 flex items-center gap-1 transition-all cursor-default"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#4b5563';
+                      e.currentTarget.style.border = '1px solid white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                      e.currentTarget.style.border = 'none';
+                    }}
+                  >
+                    📍 {exp.location}
+                  </span>
+                )}
                 <span 
                   className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 flex items-center gap-1 transition-all cursor-default"
                   onMouseEnter={(e) => {
@@ -442,41 +536,33 @@ export default function Home() {
                     e.currentTarget.style.border = 'none';
                   }}
                 >
-                  📍 {exp.location}
+                  📅 {exp.period}
                 </span>
-              )}
-              <span 
-                className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 flex items-center gap-1 transition-all cursor-default"
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#4b5563';
-                  e.currentTarget.style.border = '1px solid white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
-                  e.currentTarget.style.border = 'none';
-                }}
-              >
-                📅 {exp.period}
-              </span>
+              </div>
+              
+              <ul className="space-y-3 text-gray-300 ml-4">
+                {exp.description.map((desc, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="text-purple-400 mt-1.5 text-sm">•</span>
+                    <span className="leading-relaxed">{desc}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            
-            <ul className="space-y-3 text-gray-300 ml-4">
-              {exp.description.map((desc, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="text-purple-400 mt-1.5 text-sm">•</span>
-                  <span className="leading-relaxed">{desc}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        
-        <button className="text-gray-400 hover:text-white transition-all duration-200 transform hover:scale-105 font-medium">
-          Show More
-        </button>
+          ))}
+          
+          {experiences.length > 2 && (
+            <button 
+              onClick={() => setShowAll(!showAll)}
+              className="text-gray-400 hover:text-white transition-all duration-200 transform hover:scale-105 font-medium"
+            >
+              {showAll ? 'Show Less' : 'Show More'}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderSkillsSection = () => (
     <div 
@@ -669,11 +755,11 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a 
-              href="/resume/q1.pdf" 
+              href="/resume/resume.pdf" 
               download="Xinyi_Li_Resume.pdf"
               className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-lg transition-all duration-200 transform hover:scale-105 font-medium text-white"
             >
-              📄 Download PDF Resume
+              Download PDF Resume
             </a>
           </div>
         </div>
@@ -681,8 +767,119 @@ export default function Home() {
     </div>
   );
 
+  const renderEducationSection = () => (
+  <div 
+    className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+    style={{ maxWidth: '48rem' }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.border = '2px solid white';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.border = 'none';
+    }}
+  >
+    <h2 className="text-2xl font-bold text-white mb-8">Education:</h2>
+    
+    <div className="space-y-8">
+      {education.map((edu, index) => (
+        <div key={index} className="space-y-4">
+          <div className="flex items-center gap-3 mb-2">
+            {/* 学校 logo */}
+            <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
+              <img 
+                src={edu.logo} 
+                alt={`${edu.institution} logo`} 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // 如果 logo 加载失败，显示首字母
+                  e.currentTarget.style.display = 'none';
+                  const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (nextElement) {
+                    nextElement.style.display = 'flex';
+                  }
+                }}
+              />
+              <div className="w-full h-full bg-purple-600 rounded flex items-center justify-center text-white font-bold text-sm" style={{display: 'none'}}>
+                {edu.institution.charAt(0)}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-white">{edu.institution}</h3>
+              <p className="text-gray-400 text-sm">{edu.location}</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-4 text-sm">
+            <span 
+              className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#4b5563';
+                e.currentTarget.style.border = '1px solid white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                e.currentTarget.style.border = 'none';
+              }}
+            >
+              {edu.degree} in {edu.major}
+            </span>
+            <span 
+              className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#4b5563';
+                e.currentTarget.style.border = '1px solid white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                e.currentTarget.style.border = 'none';
+              }}
+            >
+              📅 {edu.period}
+            </span>
+            <span 
+              className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#4b5563';
+                e.currentTarget.style.border = '1px solid white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                e.currentTarget.style.border = 'none';
+              }}
+            >
+              📊 GPA: {edu.gpa}
+            </span>
+          </div>
+          
+          {edu.courses && (
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-2">Relevant Courses:</h4>
+              <div className="flex flex-wrap gap-2">
+                {edu.courses.map((course, i) => (
+                  <span 
+                    key={i} 
+                    className="bg-purple-600/20 text-purple-300 px-2 py-1 rounded text-xs transition-all"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.border = '1px solid white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.border = 'none';
+                    }}
+                  >
+                    {course}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-violet-900 text-white">
       <div className="container mx-auto px-6 py-12">
         <div className="space-y-20">
           
@@ -691,6 +888,7 @@ export default function Home() {
               {renderHeroSection()}
               {renderGitHubContributions()}
               {renderAboutMeSection()}
+              {renderEducationSection()}
               {renderExperienceSection()}
               {renderSkillsSection()}
             </div>
