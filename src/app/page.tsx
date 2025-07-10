@@ -20,6 +20,14 @@ interface Contribution {
   intensity: number;
 }
 
+interface Experience {
+  company: string;
+  role: string;
+  location?: string;
+  period: string;
+  description: string[];
+}
+
 interface Project {
   name: string;
   description: string;
@@ -96,6 +104,30 @@ export default function Home() {
     tools: ['Git', 'Docker', 'AWS', 'Figma', 'Jira', 'Postman', 'VS Code']
   };
 
+  const experiences: Experience[] = [
+    {
+      company: 'Tech Company',
+      role: 'Software Engineer Intern',
+      location: 'San Francisco, CA',
+      period: 'Jun. 2024 - Aug. 2024',
+      description: [
+        'Developed full-stack web applications using React.js and Node.js.',
+        'Collaborated with cross-functional teams to deliver high-quality software solutions.',
+        'Implemented responsive UI components and optimized application performance.'
+      ]
+    },
+    {
+      company: 'University Research Lab',
+      role: 'Research Assistant',
+      location: 'University Campus',
+      period: 'Sep. 2023 - May. 2024',
+      description: [
+        'Conducted research on machine learning algorithms and data analysis.',
+        'Published research findings and presented at academic conferences.'
+      ]
+    }
+  ];
+
   const projects: Project[] = [
     {
       name: 'E-Commerce Platform',
@@ -123,7 +155,7 @@ export default function Home() {
           <p className="text-xl text-gray-300 mb-2">Software Engineer & Full-Stack Developer</p>
           <p className="text-gray-400 flex items-center gap-2">
             <MapPin size={16} />
-            San Francisco, California, United States
+            Ann Arbor, Michigan, United States
           </p>
         </div>
 
@@ -138,8 +170,12 @@ export default function Home() {
           <a href="https://github.com/AdelineXinyi" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200">
             <Github className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors" />
           </a>
-          <a href="https://xinyi-li.dev" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200">
-            <Globe className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors" />
+          <a href="https://leetcode.com/u/xinyiaddie/" target="_blank" rel="noopener noreferrer" className="transform hover:scale-110 transition-transform duration-200" title="LeetCode Profile">
+            <div className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer transition-colors flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+                <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-2.8-2.265-6.942-1.985-9.383.641l-2.03 2.716L5.45 6.702l.65-.694c.79-.844 2.301-1.248 3.538-.955 1.25.297 2.457 1.184 2.457 1.184s.787.672 1.747.672c1.178 0 2.066-1.07 1.747-2.3-.318-1.23-1.747-2.3-1.747-2.3S11.5.797 9.66.797 6.25 2.125 6.25 2.125L13.483 0z"/>
+              </svg>
+            </div>
           </a>
         </div>
 
@@ -163,8 +199,7 @@ export default function Home() {
               e.currentTarget.style.border = 'none';
             }}
           >
-            <User size={16} />
-            🏠 Home
+            🗺 Home
           </button>
           <button 
             onClick={() => setActiveTab('projects')}
@@ -184,8 +219,7 @@ export default function Home() {
               e.currentTarget.style.border = 'none';
             }}
           >
-            <Code size={16} />
-            💼 Projects
+            🗿 Projects
           </button>
           <button 
             onClick={() => setActiveTab('resume')}
@@ -205,8 +239,7 @@ export default function Home() {
               e.currentTarget.style.border = 'none';
             }}
           >
-            <Briefcase size={16} />
-            📄 Resume
+            🌋 Resume
           </button>
         </div>
       </div>
@@ -226,7 +259,7 @@ export default function Home() {
   const renderGitHubContributions = () => (
     <div 
       className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
-      style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
+      style={{ maxWidth: '48rem' }}
       onMouseEnter={(e) => {
         e.currentTarget.style.border = '2px solid white';
       }}
@@ -270,10 +303,10 @@ export default function Home() {
                   borderRadius: '2px',
                   backgroundColor: 
                     contrib.intensity === 0 ? '#161b22' :
-                    contrib.intensity === 1 ? '#0e4429' :
-                    contrib.intensity === 2 ? '#006d32' :
-                    contrib.intensity === 3 ? '#26a641' :
-                    '#39d353',
+                    contrib.intensity === 1 ? '#2d1b69' :
+                    contrib.intensity === 2 ? '#553c9a' :
+                    contrib.intensity === 3 ? '#8b5cf6' :
+                    '#a855f7',
                   outline: 'none'
                 }}
                 onMouseEnter={(e) => {
@@ -310,18 +343,14 @@ export default function Home() {
           )}
         </div>
         
-        <div className="text-center">
-          <p className="text-sm text-gray-500">
-            Contributions: {contributions.length} loaded
-          </p>
-        </div>
+       
         
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-400">
             {githubData ? `${githubData.public_repos} repositories` : 'Loading repositories...'}
           </p>
           <p className="text-sm text-gray-400">
-            1,245 contributions in the last year
+            30 contributions in the last year
           </p>
         </div>
         
@@ -341,7 +370,7 @@ export default function Home() {
   const renderAboutMeSection = () => (
     <div 
       className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
-      style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
+      style={{ maxWidth: '48rem' }}
       onMouseEnter={(e) => {
         e.currentTarget.style.border = '2px solid white';
       }}
@@ -364,10 +393,95 @@ export default function Home() {
     </div>
   );
 
+  const renderExperienceSection = () => (
+    <div 
+      className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+      style={{ maxWidth: '48rem' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.border = '2px solid white';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.border = 'none';
+      }}
+    >
+      <h2 className="text-2xl font-bold text-white mb-8">Experience:</h2>
+      
+      <div className="space-y-12">
+        {experiences.map((exp, index) => (
+          <div key={index} className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-purple-600 rounded flex items-center justify-center text-white font-bold text-sm">
+                {exp.company.charAt(0)}
+              </div>
+              <h3 className="text-xl font-semibold text-white">{exp.company}</h3>
+            </div>
+            
+            <div className="flex flex-wrap gap-4 text-sm">
+              <span 
+                className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 transition-all cursor-default"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#4b5563';
+                  e.currentTarget.style.border = '1px solid white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                  e.currentTarget.style.border = 'none';
+                }}
+              >
+                {exp.role}
+              </span>
+              {exp.location && (
+                <span 
+                  className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 flex items-center gap-1 transition-all cursor-default"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#4b5563';
+                    e.currentTarget.style.border = '1px solid white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                    e.currentTarget.style.border = 'none';
+                  }}
+                >
+                  📍 {exp.location}
+                </span>
+              )}
+              <span 
+                className="bg-gray-700/50 px-3 py-1 rounded text-gray-300 flex items-center gap-1 transition-all cursor-default"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#4b5563';
+                  e.currentTarget.style.border = '1px solid white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(55, 65, 81, 0.5)';
+                  e.currentTarget.style.border = 'none';
+                }}
+              >
+                📅 {exp.period}
+              </span>
+            </div>
+            
+            <ul className="space-y-3 text-gray-300 ml-4">
+              {exp.description.map((desc, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="text-purple-400 mt-1.5 text-sm">•</span>
+                  <span className="leading-relaxed">{desc}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        
+        <button className="text-gray-400 hover:text-white transition-all duration-200 transform hover:scale-105 font-medium">
+          Show More
+        </button>
+      </div>
+    </div>
+  );
+
   const renderSkillsSection = () => (
     <div 
       className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300"
-      style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
+      style={{ maxWidth: '48rem' }}
       onMouseEnter={(e) => {
         e.currentTarget.style.border = '2px solid white';
       }}
@@ -577,6 +691,7 @@ export default function Home() {
               {renderHeroSection()}
               {renderGitHubContributions()}
               {renderAboutMeSection()}
+              {renderExperienceSection()}
               {renderSkillsSection()}
             </div>
           )}
