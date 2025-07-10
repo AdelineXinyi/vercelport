@@ -20,8 +20,12 @@ interface Contribution {
   intensity: number;
 }
 
+// === 修改：新增 ActiveTab 类型定义 ===
+type ActiveTab = 'home' | 'projects' | 'resume';
+
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('home');
+  // === 修改：useState 中使用 ActiveTab 类型 ===
+  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [contributions, setContributions] = useState<Contribution[]>([]);
 
