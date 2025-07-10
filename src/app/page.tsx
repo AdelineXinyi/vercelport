@@ -219,7 +219,8 @@ export default function Home() {
 
               {/* GitHub Contributions Section */}
               <div 
-                className="bg-gray-800/30 rounded-xl p-6 max-w-5xl mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+                className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+                style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
                 onMouseEnter={(e) => {
                   e.currentTarget.style.border = '2px solid white';
                 }}
@@ -332,7 +333,8 @@ export default function Home() {
 
               {/* About Me Section */}
               <div 
-                className="bg-gray-800/30 rounded-xl p-6 max-w-5xl mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+                className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
+                style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
                 onMouseEnter={(e) => {
                   e.currentTarget.style.border = '2px solid white';
                 }}
@@ -356,7 +358,8 @@ export default function Home() {
 
               {/* Skills Section */}
               <div 
-                className="bg-gray-800/30 rounded-xl p-6 max-w-5xl mx-auto transform hover:scale-[1.01] transition-all duration-300"
+                className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300"
+                style={{ maxWidth: '48rem' }} // 强制设置最大宽度为 48rem (768px)
                 onMouseEnter={(e) => {
                   e.currentTarget.style.border = '2px solid white';
                 }}
@@ -469,7 +472,7 @@ export default function Home() {
 
           {/* Projects Tab */}
           {activeTab === 'projects' && (
-            <div className="max-w-5xl mx-auto space-y-12">
+            <div className="max-w-4xl mx-auto space-y-12">
               <h2 className="text-3xl font-bold text-white mb-8">Featured Projects</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -528,7 +531,7 @@ export default function Home() {
 
           {/* Resume Tab */}
           {activeTab === 'resume' && (
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold text-white mb-12">Resume</h2>
               <div 
                 className="bg-gray-800/30 rounded-xl p-8 transform hover:scale-[1.01] transition-all duration-300"
