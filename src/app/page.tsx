@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css'; 
 import { Mail, Linkedin, Github, ExternalLink, MapPin, User, Briefcase, Code, Globe, BookOpen } from 'lucide-react';
 
 // 定义类型接口
@@ -52,62 +54,130 @@ interface Education {
 // 定义 ActiveTab 类型
 type ActiveTab = 'home' | 'projects' | 'resume';
 
+// ========== 辅助函数定义（在组件外部） ==========
+
+
+const formatDateForTooltip = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { 
+      month: 'long', 
+      day: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  } catch (error) {
+    return dateString;
+  }
+};
+
+// 获取贡献描述文本
+const getContributionText = (count: number, date: string): string => {
+  const formattedDate = formatDateForTooltip(date);
+  
+  if (count === 0) {
+    return `No contributions on ${formattedDate}`;
+  } else if (count === 1) {
+    return `1 contribution on ${formattedDate}`;
+  } else {
+    return `${count} contributions on ${formattedDate}`;
+  }
+};
+const calculateIntensity = (count: number): number => {
+  if (count === 0) return 0;
+  if (count <= 3) return 1;
+  if (count <= 6) return 2;
+  if (count <= 9) return 3;
+  return 4; // 10+ contributions
+};
+
+// 获取真实 GitHub 贡献数据的函数（安全版本）
+const fetchRealGitHubContributionsSecure = async (): Promise<Contribution[]> => {
+  try {
+    console.log('Attempting to fetch real GitHub contributions securely...');
+    
+    const response = await fetch('/api/github-contributions-secure');
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+      throw new Error(`API Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.data?.user?.contributionsCollection) {
+      throw new Error('Invalid response structure from GitHub API');
+    }
+
+    const calendar = data.data.user.contributionsCollection.contributionCalendar;
+    const contributions: Contribution[] = [];
+
+    calendar.weeks.forEach((week: any, weekIndex: number) => {
+      week.contributionDays.forEach((day: any, dayIndex: number) => {
+        contributions.push({
+          id: `${weekIndex}-${dayIndex}`,
+          date: day.date,
+          count: day.contributionCount,
+          intensity: calculateIntensity(day.contributionCount)
+        });
+      });
+    });
+
+    console.log(`✅ Successfully fetched ${contributions.length} real contributions`);
+    return contributions;
+
+  } catch (error) {
+    console.error('Failed to fetch real GitHub contributions:', error);
+    throw error;
+  }
+};
+
+// ========== 主组件 ==========
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [showAllExperiences, setShowAllExperiences] = useState(false); 
+  const generateContributions = async (): Promise<Contribution[]> => {
+    try {
+      const realContributions = await fetchRealGitHubContributionsSecure();
+      console.log('✅ Successfully loaded real GitHub contributions');
+      return realContributions;
+    } catch (error) {
+      console.warn('⚠️ Failed to fetch real contributions:', error);
+      return []; // 返回空数组，不显示贡献图
+    }
+  };
 
   // 获取GitHub用户数据
   useEffect(() => {
     const fetchGitHubData = async () => {
       try {
-        // 获取用户基本信息
+        // 获取用户基本信息（保持不变）
         const userResponse = await fetch('https://api.github.com/users/AdelineXinyi');
+        if (userResponse.ok) {
         const userData: GitHubData = await userResponse.json();
         setGithubData(userData);
+        }
         
-        // 生成贡献图数据
-        const mockContributions = generateContributions();
-        console.log('Generated contributions:', mockContributions.length); // 调试信息
-        setContributions(mockContributions);
+        // 尝试获取真实贡献数据
+        const contributionsData = await generateContributions();
+        
+        if (contributionsData.length > 0) {
+          console.log(`Loaded ${contributionsData.length} contributions`);
+          setContributions(contributionsData);
+        } else {
+          console.log('No contributions data to display');
+          setContributions([]); // 空数组，贡献图不显示
+        }
       } catch (error) {
         console.error('Error fetching GitHub data:', error);
-        // fallback到模拟数据
-        const fallbackContributions = generateContributions();
-        console.log('Fallback contributions:', fallbackContributions.length); // 调试信息
-        setContributions(fallbackContributions);
+        setContributions([]); // 出错时也设置空数组
       }
     };
 
     fetchGitHubData();
   }, []);
-
-  // GitHub贡献图数据生成
-  const generateContributions = (): Contribution[] => {
-    const contributions: Contribution[] = [];
-    const weeks = 52;
-    const daysInWeek = 7;
-    
-    for (let week = 0; week < weeks; week++) {
-      for (let day = 0; day < daysInWeek; day++) {
-        const intensity = Math.random();
-        const date = new Date();
-        date.setDate(date.getDate() - (weeks - week) * 7 + day);
-        
-        contributions.push({
-          id: `${week}-${day}`,
-          date: date.toISOString().split('T')[0],
-          count: intensity > 0.8 ? Math.floor(Math.random() * 10) + 10 : 
-                 intensity > 0.6 ? Math.floor(Math.random() * 5) + 5 :
-                 intensity > 0.3 ? Math.floor(Math.random() * 3) + 1 : 0,
-          intensity: intensity > 0.8 ? 4 : intensity > 0.6 ? 3 : intensity > 0.3 ? 2 : intensity > 0.1 ? 1 : 0
-        });
-      }
-    }
-    
-    console.log('Generated contributions array:', contributions.slice(0, 5)); // 显示前5个元素
-    return contributions;
-  };
 
   const skills = {
     programming: ['Python', 'JavaScript', 'TypeScript', 'Java', 'C++', 'SQL', 'R'],
@@ -317,7 +387,7 @@ export default function Home() {
   );
 
   const renderGitHubContributions = () => (
-    <div 
+    <div
       className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
       style={{ maxWidth: '48rem' }}
       onMouseEnter={(e) => {
@@ -333,21 +403,23 @@ export default function Home() {
           <h3 className="text-xl font-semibold text-white group-hover:text-purple-400 transition-colors">AdelineXinyi</h3>
         </a>
       </div>
-      
+
       <div className="space-y-4">
-        {/* 月份标签 */}
+        {/* 月份标签：保持不变，按你原先的要求 */}
         <div className="flex justify-between text-sm text-gray-400 px-2">
           {['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map(month => (
             <span key={month}>{month}</span>
           ))}
         </div>
-        
+
         {/* 贡献图 */}
-        <div 
+        <div
           className="inline-block overflow-hidden"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(52, 12px)',
+            gridTemplateColumns: 'repeat(53, 12px)', // 53 columns for weeks
+            gridTemplateRows: 'repeat(7, 12px)',   // 7 rows for days of the week
+            gridAutoFlow: 'column', // Fill columns first (vertical then horizontal)
             gap: '2px',
             padding: '10px'
           }}
@@ -356,12 +428,15 @@ export default function Home() {
             contributions.map((contrib) => (
               <div
                 key={contrib.id}
+                // *** Use react-tooltip's data attributes ***
+                data-tooltip-id="my-github-tooltip"
+                data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
                 className="cursor-pointer transition-all duration-200 hover:scale-110"
                 style={{
                   width: '10px',
                   height: '10px',
                   borderRadius: '2px',
-                  backgroundColor: 
+                  backgroundColor:
                     contrib.intensity === 0 ? '#161b22' :
                     contrib.intensity === 1 ? '#2d1b69' :
                     contrib.intensity === 2 ? '#553c9a' :
@@ -371,18 +446,22 @@ export default function Home() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.outline = '2px solid white';
+                  // console.log('Hover:', getContributionText(contrib.count || 0, contrib.date || '')); // Debugging log can be removed now
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.outline = 'none';
                 }}
-                title={`${contrib.count || 0} contributions on ${contrib.date || 'Unknown date'}`}
+                // *** Remove the native 'title' attribute to avoid double tooltips ***
+                // title={getContributionText(contrib.count || 0, contrib.date || '')}
               />
             ))
           ) : (
-            // 备用显示：如果没有数据，显示占位符
-            Array.from({length: 364}, (_, i) => (
+            // Fallback display: placeholder squares if no data
+            Array.from({length: 371}, (_, i) => ( // 53 weeks * 7 days = 371
               <div
                 key={`placeholder-${i}`}
+                data-tooltip-id="my-github-tooltip"
+                data-tooltip-content="No contribution data"
                 className="cursor-pointer transition-all duration-200 hover:scale-110"
                 style={{
                   width: '10px',
@@ -397,24 +476,42 @@ export default function Home() {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.outline = 'none';
                 }}
-                title="No contribution data"
+                // *** Remove the native 'title' attribute ***
+                // title="No contribution data"
               />
             ))
           )}
         </div>
-        
-       
-        
+
+        {/* *** Custom Tooltip component from react-tooltip *** */}
+        <Tooltip
+          id="my-github-tooltip"
+          place="top" // Position the tooltip above the element
+          delayShow={100} // Show after 100ms hover
+          delayHide={100} // Hide after 100ms mouse leave
+          style={{
+            backgroundColor: '#333e4d', // Dark grey background
+            color: '#ffffff',         // White text
+            padding: '8px 12px',      // Internal padding
+            borderRadius: '6px',      // Rounded corners
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)', // Soft shadow
+            border: '1px solid rgba(255, 255, 255, 0.15)', // Subtle white border
+            zIndex: 9999, // Ensure it's on top of other elements
+            fontSize: '0.875rem' // Text size (equivalent to Tailwind's text-sm)
+          }}
+        />
+
+
         <div className="flex items-center justify-between">
           <p className="text-sm text-white">
             {githubData ? `${githubData.public_repos} repositories` : 'Loading repositories...'}
           </p>
           <p className="text-sm text-white">
-            30 contributions in the last year
+            {contributions.length > 0 ? `${contributions.reduce((sum, contrib) => sum + contrib.count, 0)} contributions in the last year` : 'No contributions data'}
           </p>
         </div>
-        
-        {/* GitHub统计信息 */}
+
+        {/* GitHub stats */}
         {githubData && (
           <div className="flex flex-wrap gap-4 text-sm text-gray-400 pt-4 border-t border-gray-700">
             <span>👥 {githubData.followers} followers</span>
@@ -454,8 +551,8 @@ export default function Home() {
   );
 
   const renderExperienceSection = () => {
-    const [showAll, setShowAll] = useState(false);
-    const displayedExperiences = showAll ? experiences : experiences.slice(0, 2);
+    // const [showAll, setShowAll] = useState(false);
+    const displayedExperiences = showAllExperiences ? experiences : experiences.slice(0, 2);
     
     return (
       <div 
@@ -553,10 +650,10 @@ export default function Home() {
           
           {experiences.length > 2 && (
             <button 
-              onClick={() => setShowAll(!showAll)}
+              onClick={() => setShowAllExperiences(!showAllExperiences)}
               className="text-gray-400 hover:text-white transition-all duration-200 transform hover:scale-105 font-medium"
             >
-              {showAll ? 'Show Less' : 'Show More'}
+              {showAllExperiences ? 'Show Less' : 'Show More'}
             </button>
           )}
         </div>
