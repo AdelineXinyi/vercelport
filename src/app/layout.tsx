@@ -1,6 +1,8 @@
+/* src/app/layout.tsx */
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import ThreeBackground from './ThreeBackground';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -56,7 +58,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#8b5cf6" />
       </head>
       <body className={inter.className}>
-        {children}
+        <ThreeBackground />
+        <div className="main-content-container">
+         {children}
+        </div>
       </body>
     </html>
   )

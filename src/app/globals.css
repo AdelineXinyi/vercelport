@@ -1,8 +1,32 @@
+/* src/app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  background-color: #4B0082;
   color: #ffffff;
+  overflow: hidden;
+}
+/* Three.js 畫布的容器 */
+.three-background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* 關鍵：確保它在其他內容的後面 */
+}
+
+/* 包裹你所有主要內容的容器 */
+.main-content-container {
+  position: relative;
+  z-index: 1; /* 確保內容在畫布之上 */
+  overflow-y: auto; /* 允許內容滾動 */
+  height: 100vh; /* 讓內容容器佔據整個視窗高度 */
+}
+.stats {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100; /* Ensure it's on top of everything */
 }

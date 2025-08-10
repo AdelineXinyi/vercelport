@@ -1,3 +1,4 @@
+/* src/app/page.tsx */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -287,7 +288,7 @@ export default function Home() {
           </p>
           <p className="text-white flex items-center gap-2">
             <MapPin size={16} />
-            Guizhou & Shanghai, China
+            Shanghai, China
           </p>
         </div>
 
@@ -978,7 +979,7 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-violet-900 text-white">
+    <div className="min-h-screen text-white">
       <div className="container mx-auto px-6 py-12">
         <div className="space-y-20">
           
