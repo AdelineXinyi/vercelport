@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css'; 
-import { Mail, Linkedin, Github, ExternalLink, MapPin, User, Briefcase, Code, Globe, BookOpen } from 'lucide-react';
+import { Mail, Linkedin, Github, ExternalLink, MapPin } from 'lucide-react';
 
 // 定义类型接口
 interface GitHubData {
@@ -57,7 +57,6 @@ type ActiveTab = 'home' | 'projects' | 'resume';
 
 // ========== 辅助函数定义（在组件外部） ==========
 
-
 const formatDateForTooltip = (dateString: string): string => {
   try {
     const date = new Date(dateString);
@@ -83,6 +82,7 @@ const getContributionText = (count: number, date: string): string => {
     return `${count} contributions on ${formattedDate}`;
   }
 };
+
 const calculateIntensity = (count: number): number => {
   if (count === 0) return 0;
   if (count <= 3) return 1;
@@ -139,6 +139,7 @@ export default function Home() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [showAllExperiences, setShowAllExperiences] = useState(false); 
+  
   const generateContributions = async (): Promise<Contribution[]> => {
     try {
       const realContributions = await fetchRealGitHubContributionsSecure();
@@ -275,6 +276,43 @@ export default function Home() {
     }
   ];
 
+  // 增强的导航按钮组件
+  const NavigationButton = ({ 
+    tab, 
+    icon, 
+    label, 
+    isActive 
+  }: { 
+    tab: ActiveTab, 
+    icon: React.ReactNode, 
+    label: string, 
+    isActive: boolean 
+  }) => (
+    <button 
+      onClick={() => setActiveTab(tab)}
+      className={`px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105 ${
+        isActive ? 'ring-2 ring-white' : ''
+      }`}
+      style={{
+        backgroundColor: isActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)',
+        color: '#ffffff'
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = '#8b5cf6';
+        }
+        e.currentTarget.style.border = '2px solid white';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = isActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)';
+        e.currentTarget.style.border = 'none';
+      }}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+
   // Render Functions
   const renderHeroSection = () => (
     <div className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto mb-32">
@@ -312,68 +350,26 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Navigation Buttons */}
+        {/* Enhanced Navigation Buttons */}
         <div className="flex flex-wrap gap-3">
-          <button 
-            onClick={() => setActiveTab('home')}
-            className="px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105"
-            style={{
-              backgroundColor: activeTab === 'home' ? '#8b5cf6' : '#374151',
-              color: '#ffffff'
-            }}
-            onMouseEnter={(e) => {
-              if (activeTab !== 'home') {
-                e.currentTarget.style.backgroundColor = '#8b5cf6';
-              }
-              e.currentTarget.style.border = '2px solid white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeTab === 'home' ? '#8b5cf6' : '#374151';
-              e.currentTarget.style.border = 'none';
-            }}
-          >
-            🗺 Home
-          </button>
-          <button 
-            onClick={() => setActiveTab('projects')}
-            className="px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105"
-            style={{
-              backgroundColor: activeTab === 'projects' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)',
-              color: '#ffffff'
-            }}
-            onMouseEnter={(e) => {
-              if (activeTab !== 'projects') {
-                e.currentTarget.style.backgroundColor = '#8b5cf6';
-              }
-              e.currentTarget.style.border = '2px solid white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeTab === 'projects' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)';
-              e.currentTarget.style.border = 'none';
-            }}
-          >
-            🗿 Projects
-          </button>
-          <button 
-            onClick={() => setActiveTab('resume')}
-            className="px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 transform hover:scale-105"
-            style={{
-              backgroundColor: activeTab === 'resume' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)',
-              color: '#ffffff'
-            }}
-            onMouseEnter={(e) => {
-              if (activeTab !== 'resume') {
-                e.currentTarget.style.backgroundColor = '#8b5cf6';
-              }
-              e.currentTarget.style.border = '2px solid white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = activeTab === 'resume' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.2)';
-              e.currentTarget.style.border = 'none';
-            }}
-          >
-            🌋 Resume
-          </button>
+          <NavigationButton 
+            tab="home" 
+            icon={<span style={{fontSize: '18px'}}>🏠</span>} 
+            label="Home" 
+            isActive={activeTab === 'home'} 
+          />
+          <NavigationButton 
+            tab="projects" 
+            icon={<span style={{fontSize: '18px'}}>📁</span>} 
+            label="Projects" 
+            isActive={activeTab === 'projects'} 
+          />
+          <NavigationButton 
+            tab="resume" 
+            icon={<span style={{fontSize: '18px'}}>📄</span>} 
+            label="Resume" 
+            isActive={activeTab === 'resume'} 
+          />
         </div>
       </div>
 
@@ -431,7 +427,6 @@ export default function Home() {
             contributions.map((contrib) => (
               <div
                 key={contrib.id}
-                // *** Use react-tooltip's data attributes ***
                 data-tooltip-id="my-github-tooltip"
                 data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
                 className="cursor-pointer transition-all duration-200 hover:scale-110"
@@ -449,13 +444,10 @@ export default function Home() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.outline = '2px solid white';
-                  // console.log('Hover:', getContributionText(contrib.count || 0, contrib.date || '')); // Debugging log can be removed now
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.outline = 'none';
                 }}
-                // *** Remove the native 'title' attribute to avoid double tooltips ***
-                // title={getContributionText(contrib.count || 0, contrib.date || '')}
               />
             ))
           ) : (
@@ -479,31 +471,27 @@ export default function Home() {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.outline = 'none';
                 }}
-                // *** Remove the native 'title' attribute ***
-                // title="No contribution data"
               />
             ))
           )}
         </div>
 
-        {/* *** Custom Tooltip component from react-tooltip *** */}
         <Tooltip
           id="my-github-tooltip"
-          place="top" // Position the tooltip above the element
-          delayShow={100} // Show after 100ms hover
-          delayHide={100} // Hide after 100ms mouse leave
+          place="top"
+          delayShow={100}
+          delayHide={100}
           style={{
-            backgroundColor: '#333e4d', // Dark grey background
-            color: '#ffffff',         // White text
-            padding: '8px 12px',      // Internal padding
-            borderRadius: '6px',      // Rounded corners
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)', // Soft shadow
-            border: '1px solid rgba(255, 255, 255, 0.15)', // Subtle white border
-            zIndex: 9999, // Ensure it's on top of other elements
-            fontSize: '0.875rem' // Text size (equivalent to Tailwind's text-sm)
+            backgroundColor: '#333e4d',
+            color: '#ffffff',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            zIndex: 9999,
+            fontSize: '0.875rem'
           }}
         />
-
 
         <div className="flex items-center justify-between">
           <p className="text-sm text-white">
@@ -554,7 +542,6 @@ export default function Home() {
   );
 
   const renderExperienceSection = () => {
-    // const [showAll, setShowAll] = useState(false);
     const displayedExperiences = showAllExperiences ? experiences : experiences.slice(0, 2);
     
     return (
@@ -574,14 +561,12 @@ export default function Home() {
           {displayedExperiences.map((exp, index) => (
             <div key={index} className="space-y-6">
               <div className="flex items-center gap-3">
-                {/* 公司 logo */}
                 <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
                   <img 
                     src={exp.logo} 
                     alt={`${exp.company} logo`} 
                     className="w-full h-full object-contain"
                     onError={(e) => {
-                      // 如果 logo 加载失败，显示首字母
                       e.currentTarget.style.display = 'none';
                       const nextElement = e.currentTarget.nextElementSibling;
                       if (nextElement) {
@@ -779,7 +764,30 @@ export default function Home() {
 
   const renderProjectsTab = () => (
     <div className="max-w-4xl mx-auto space-y-12">
-      <h2 className="text-3xl font-bold text-white mb-8">Featured Projects</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold text-white">Featured Projects</h2>
+        {/* Navigation buttons for projects page */}
+        <div className="flex gap-3">
+          <NavigationButton 
+            tab="home" 
+            icon={<span style={{fontSize: '18px'}}>🏠</span>} 
+            label="Home" 
+            isActive={activeTab === 'home'} 
+          />
+          <NavigationButton 
+            tab="projects" 
+            icon={<span style={{fontSize: '18px'}}>📁</span>} 
+            label="Projects" 
+            isActive={activeTab === 'projects'} 
+          />
+          <NavigationButton 
+            tab="resume" 
+            icon={<span style={{fontSize: '18px'}}>📄</span>} 
+            label="Resume" 
+            isActive={activeTab === 'resume'} 
+          />
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {projects.filter(project => project.featured).map((project, index) => (
@@ -837,7 +845,31 @@ export default function Home() {
 
   const renderResumeTab = () => (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold text-white mb-12">Resume</h2>
+      <div className="flex items-center justify-between mb-12">
+        <h2 className="text-3xl font-bold text-white">Resume</h2>
+        {/* Navigation buttons for resume page */}
+        <div className="flex gap-3">
+          <NavigationButton 
+            tab="home" 
+            icon={<span style={{fontSize: '18px'}}>🏠</span>} 
+            label="Home" 
+            isActive={activeTab === 'home'} 
+          />
+          <NavigationButton 
+            tab="projects" 
+            icon={<span style={{fontSize: '18px'}}>📁</span>} 
+            label="Projects" 
+            isActive={activeTab === 'projects'} 
+          />
+          <NavigationButton 
+            tab="resume" 
+            icon={<span style={{fontSize: '18px'}}>📄</span>} 
+            label="Resume" 
+            isActive={activeTab === 'resume'} 
+          />
+        </div>
+      </div>
+      
       <div 
         className="bg-gray-800/30 rounded-xl p-8 transform hover:scale-[1.01] transition-all duration-300"
         onMouseEnter={(e) => {
@@ -863,7 +895,7 @@ export default function Home() {
             <h3 className="text-xl font-semibold text-white mb-4">Preview</h3>
             <div className="w-full" style={{ aspectRatio: '1 / 1.414' }}>
                 <iframe
-                    src="/resume/resume.pdf#toolbar=0&navpanes=0&scrollbar=0" // 嵌入PDF文件，并隐藏默认工具栏
+                    src="/resume/resume.pdf#toolbar=0&navpanes=0&scrollbar=0"
                     className="w-full h-full rounded-lg"
                     style={{ border: 'none' }}
                 />
@@ -890,14 +922,12 @@ export default function Home() {
       {education.map((edu, index) => (
         <div key={index} className="space-y-4">
           <div className="flex items-center gap-3 mb-2">
-            {/* 学校 logo */}
             <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
               <img 
                 src={edu.logo} 
                 alt={`${edu.institution} logo`} 
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  // 如果 logo 加载失败，显示首字母
                   e.currentTarget.style.display = 'none';
                   const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
                   if (nextElement) {
