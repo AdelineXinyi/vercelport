@@ -91,7 +91,53 @@ const calculateIntensity = (count: number): number => {
   return 4; // 10+ contributions
 };
 
-// 从压缩的贡献数据生成完整的贡献图
+// 数字动画组件
+const AnimatedNumber = ({ 
+  value, 
+  duration = 1000,
+  suffix = '' 
+}: { 
+  value: number, 
+  duration?: number,
+  suffix?: string 
+}) => {
+  const [displayValue, setDisplayValue] = useState(value);
+  
+  useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+    const startValue = displayValue;
+    const targetValue = value;
+    
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // 使用easeOut缓动函数
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const currentValue = Math.round(startValue + (targetValue - startValue) * easeOut);
+      
+      setDisplayValue(currentValue);
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+    
+    if (targetValue !== startValue) {
+      animationFrame = requestAnimationFrame(animate);
+    }
+    
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [value, duration, displayValue]);
+  
+  return <span>{displayValue}{suffix}</span>;
+};
 const generateContributionsFromCompressed = (compressedData: {[key: string]: number}): Contribution[] => {
   const contributions: Contribution[] = [];
   
@@ -261,11 +307,26 @@ export default function Home() {
     return createStaticContributions();
   });
   const [isClient, setIsClient] = useState(false);
+  const [showFreshData, setShowFreshData] = useState(false); // 控制新数据动画
+  const [showGithubModule, setShowGithubModule] = useState(false); // 控制整个模块显示
+  
+  // 用于平滑数字动画的状态
+  const [statsData, setStatsData] = useState({
+    repos: 11, // 基于你的静态数据
+    totalContributions: 134, // 基于你的静态数据
+    followers: 2,
+    following: 1
+  });
 
   // 客户端挂载后立即加载缓存数据
   useEffect(() => {
     setIsClient(true);
     setIsLoadingContributions(false); // 立即停止加载状态，因为我们有静态数据
+    
+    // 延迟显示整个GitHub模块，创建"浮现"效果
+    setTimeout(() => {
+      setShowGithubModule(true);
+    }, 300); // 300ms后模块开始出现
     
     // 可选：检查localStorage缓存以获取更新的数据
     try {
@@ -305,25 +366,21 @@ export default function Home() {
       try {
         setContributionsError(null);
         
-        // 优先加载压缩的静态数据
-        try {
-          const staticResponse = await fetch('/github-contributions.json');
-          if (staticResponse.ok) {
-            const compressedData = await staticResponse.json();
-            console.log('Loaded compressed static contributions data');
-            const expandedContributions = generateContributionsFromCompressed(compressedData);
-            setSkeletonContributions(expandedContributions);
-            setIsLoadingContributions(false);
-          }
-        } catch (e) {
-          console.log('No static data available, will show loading');
-        }
-        
         // 获取用户基本信息
         const userResponse = await fetch('https://api.github.com/users/AdelineXinyi');
         if (userResponse.ok) {
           const userData: GitHubData = await userResponse.json();
           setGithubData(userData);
+          
+          // 平滑更新统计数据
+          setTimeout(() => {
+            setStatsData({
+              repos: userData.public_repos,
+              totalContributions: statsData.totalContributions, // 先保持贡献数不变
+              followers: userData.followers,
+              following: userData.following
+            });
+          }, 800); // 比贡献图稍晚更新
         }
         
         // 获取最新贡献数据
@@ -331,10 +388,21 @@ export default function Home() {
         
         if (contributionsData.length > 0) {
           console.log(`Loaded ${contributionsData.length} fresh contributions`);
-          setContributions(contributionsData);
           
-          // 更新骨架屏缓存
-          setSkeletonContributions(contributionsData);
+          // 计算新的贡献总数
+          const newTotalContributions = contributionsData.reduce((sum, contrib) => sum + contrib.count, 0);
+          
+          // 短暂延迟后显示新数据，创建平滑过渡效果
+          setTimeout(() => {
+            setContributions(contributionsData);
+            setShowFreshData(true); // 触发淡入动画
+            
+            // 同时更新贡献总数
+            setStatsData(prev => ({
+              ...prev,
+              totalContributions: newTotalContributions
+            }));
+          }, 500); // 500ms延迟让用户看到静态数据
           
           // 缓存数据
           try {
@@ -565,23 +633,36 @@ export default function Home() {
 
   const renderGitHubContributions = () => (
     <div
-      className="bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24"
-      style={{ maxWidth: '48rem' }}
+      className={`bg-gray-800/30 rounded-xl p-6 mx-auto transform hover:scale-[1.01] transition-all duration-300 mb-24 ${
+        showGithubModule 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      }`}
+      style={{ 
+        maxWidth: '48rem',
+        transition: 'opacity 1s ease-out, transform 1s ease-out'
+      }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.border = '2px solid white';
+        if (showGithubModule) {
+          e.currentTarget.style.border = '2px solid white';
+        }
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.border = 'none';
       }}
     >
-      <div className="flex items-center gap-3 mb-6">
+      <div className={`flex items-center gap-3 mb-6 transition-all duration-700 delay-200 ${
+        showGithubModule ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+      }`}>
         <a href="https://github.com/AdelineXinyi" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group">
           <Github className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-200" />
           <h3 className="text-xl font-semibold text-white group-hover:text-purple-400 transition-colors">AdelineXinyi</h3>
         </a>
       </div>
 
-      <div className="space-y-4">
+      <div className={`space-y-4 transition-all duration-700 delay-400 ${
+        showGithubModule ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}>
         {/* 月份标签：保持不变，按你原先的要求 */}
         <div className="flex justify-between text-sm text-gray-400 px-2">
           {['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map(month => (
