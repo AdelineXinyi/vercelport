@@ -52,6 +52,28 @@ export async function GET() {
       );
     }
 
+
+    if (process.env.NODE_ENV === 'development') {
+      const fs = require('fs');
+      const path = require('path');
+      
+      // 提取并压缩贡献数据 - 只保存非零贡献
+      const compressedContributions: {[key: string]: number} = {};
+      
+      data.data.user.contributionsCollection.contributionCalendar.weeks.forEach((week: any) => {
+        week.contributionDays.forEach((day: any) => {
+          if (day.contributionCount > 0) {
+            compressedContributions[day.date] = day.contributionCount;
+          }
+        });
+      });
+      
+      // 导出压缩格式到 public 目录
+      fs.writeFileSync(
+        path.join(process.cwd(), 'public/github-contributions.json'),
+        JSON.stringify(compressedContributions, null, 2)
+      );
+    }
     return NextResponse.json(data);
     
   } catch (error) {

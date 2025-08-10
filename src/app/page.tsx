@@ -91,7 +91,121 @@ const calculateIntensity = (count: number): number => {
   return 4; // 10+ contributions
 };
 
-// 获取真实 GitHub 贡献数据的函数（安全版本）
+// 从压缩的贡献数据生成完整的贡献图
+const generateContributionsFromCompressed = (compressedData: {[key: string]: number}): Contribution[] => {
+  const contributions: Contribution[] = [];
+  
+  // GitHub贡献图通常从去年7月第一个星期日开始
+  // 根据你的数据，应该从2024年7月7日开始
+  const startDate = new Date('2024-07-07'); // 星期日开始
+  
+  for (let week = 0; week < 53; week++) {
+    for (let day = 0; day < 7; day++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + week * 7 + day);
+      const dateString = currentDate.toISOString().split('T')[0];
+      
+      // 从压缩数据中查找该日期的贡献数
+      const count = compressedData[dateString] || 0;
+      
+      contributions.push({
+        id: `${week}-${day}`,
+        date: dateString,
+        count: count,
+        intensity: calculateIntensity(count)
+      });
+    }
+  }
+  
+  return contributions;
+};
+
+// 根据你的实际数据创建静态骨架屏
+const createStaticContributions = (): Contribution[] => {
+  const yourRealData = {
+    "2024-08-08": 4,
+    "2024-08-18": 3,
+    "2024-09-09": 1,
+    "2024-09-17": 1,
+    "2024-09-24": 1,
+    "2024-09-25": 1,
+    "2024-09-29": 6,
+    "2024-09-30": 4,
+    "2024-10-01": 1,
+    "2024-10-02": 2,
+    "2024-10-12": 10,
+    "2024-10-29": 17,
+    "2024-11-01": 3,
+    "2024-11-02": 3,
+    "2024-11-04": 4,
+    "2024-11-06": 3,
+    "2024-11-07": 5,
+    "2024-11-08": 2,
+    "2024-11-10": 3,
+    "2024-11-20": 2,
+    "2024-11-21": 2,
+    "2024-11-22": 2,
+    "2024-11-27": 21,
+    "2025-02-22": 6,
+    "2025-02-23": 10,
+    "2025-03-14": 3,
+    "2025-03-20": 1,
+    "2025-03-31": 1,
+    "2025-04-05": 1,
+    "2025-04-09": 1,
+    "2025-05-21": 1,
+    "2025-06-17": 1,
+    "2025-06-20": 2,
+    "2025-06-25": 1,
+    "2025-07-02": 1,
+    "2025-07-09": 4
+  };
+  
+  return generateContributionsFromCompressed(yourRealData);
+};
+const generateSkeletonContributions = (): Contribution[] => {
+  const contributions: Contribution[] = [];
+  
+  for (let week = 0; week < 53; week++) {
+    for (let day = 0; day < 7; day++) {
+      let intensity = 0;
+      
+      // 模拟典型的开发者贡献模式
+      const isWeekend = day === 0 || day === 6;
+      const isHolidayPeriod = week >= 25 && week <= 27; // 假期
+      const isActiveProject = week >= 10 && week <= 16; // 项目高峰期
+      const isRegularWork = week >= 35 && week <= 45; // 常规工作期
+      
+      if (isHolidayPeriod) {
+        intensity = 0; // 假期无贡献
+      } else if (isWeekend) {
+        intensity = Math.random() < 0.2 ? 1 : 0; // 周末偶尔有贡献
+      } else if (isActiveProject) {
+        // 项目期间工作日有较多贡献
+        const rand = Math.random();
+        if (rand < 0.7) intensity = rand < 0.3 ? 3 : 2;
+        else intensity = rand < 0.9 ? 1 : 0;
+      } else if (isRegularWork) {
+        // 常规工作期
+        const rand = Math.random();
+        if (rand < 0.6) intensity = rand < 0.2 ? 2 : 1;
+        else intensity = 0;
+      } else {
+        // 其他时期偶尔有贡献
+        intensity = Math.random() < 0.3 ? 1 : 0;
+      }
+      
+      contributions.push({
+        id: `skeleton-${week}-${day}`,
+        date: `2024-07-${6 + week * 7 + day}`, // 假日期
+        count: intensity * Math.floor(Math.random() * 3) + intensity,
+        intensity: intensity
+      });
+    }
+  }
+  
+  return contributions;
+};
 const fetchRealGitHubContributionsSecure = async (): Promise<Contribution[]> => {
   try {
     console.log('Attempting to fetch real GitHub contributions securely...');
@@ -140,7 +254,37 @@ export default function Home() {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [showAllExperiences, setShowAllExperiences] = useState(false); 
   const [isLoadingContributions, setIsLoadingContributions] = useState(true);
-  const [contributionsError, setContributionsError] = useState<string | null>(null); 
+  const [contributionsError, setContributionsError] = useState<string | null>(null);
+  
+  // 立即使用你的真实数据作为骨架屏
+  const [skeletonContributions, setSkeletonContributions] = useState<Contribution[]>(() => {
+    return createStaticContributions();
+  });
+  const [isClient, setIsClient] = useState(false);
+
+  // 客户端挂载后立即加载缓存数据
+  useEffect(() => {
+    setIsClient(true);
+    setIsLoadingContributions(false); // 立即停止加载状态，因为我们有静态数据
+    
+    // 可选：检查localStorage缓存以获取更新的数据
+    try {
+      const cachedData = localStorage.getItem('github-contributions-cache');
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        const cacheTime = parsed.timestamp;
+        const cacheAge = Date.now() - cacheTime;
+        
+        // 如果缓存不超过1小时，使用缓存数据
+        if (cacheAge < 60 * 60 * 1000) {
+          console.log('Using more recent cached data');
+          setSkeletonContributions(parsed.data);
+        }
+      }
+    } catch (e) {
+      console.log('Cache parse error, using static data');
+    }
+  }, []); 
   
   const generateContributions = async (): Promise<Contribution[]> => {
     try {
@@ -155,32 +299,57 @@ export default function Home() {
 
   // 获取GitHub用户数据
   useEffect(() => {
+    if (!isClient) return;
+    
     const fetchGitHubData = async () => {
       try {
-        setIsLoadingContributions(true);
         setContributionsError(null);
         
-        // 获取用户基本信息（保持不变）
-        const userResponse = await fetch('https://api.github.com/users/AdelineXinyi');
-        if (userResponse.ok) {
-        const userData: GitHubData = await userResponse.json();
-        setGithubData(userData);
+        // 优先加载压缩的静态数据
+        try {
+          const staticResponse = await fetch('/github-contributions.json');
+          if (staticResponse.ok) {
+            const compressedData = await staticResponse.json();
+            console.log('Loaded compressed static contributions data');
+            const expandedContributions = generateContributionsFromCompressed(compressedData);
+            setSkeletonContributions(expandedContributions);
+            setIsLoadingContributions(false);
+          }
+        } catch (e) {
+          console.log('No static data available, will show loading');
         }
         
-        // 尝试获取真实贡献数据
+        // 获取用户基本信息
+        const userResponse = await fetch('https://api.github.com/users/AdelineXinyi');
+        if (userResponse.ok) {
+          const userData: GitHubData = await userResponse.json();
+          setGithubData(userData);
+        }
+        
+        // 获取最新贡献数据
         const contributionsData = await generateContributions();
         
         if (contributionsData.length > 0) {
-          console.log(`Loaded ${contributionsData.length} contributions`);
+          console.log(`Loaded ${contributionsData.length} fresh contributions`);
           setContributions(contributionsData);
+          
+          // 更新骨架屏缓存
+          setSkeletonContributions(contributionsData);
+          
+          // 缓存数据
+          try {
+            localStorage.setItem('github-contributions-cache', JSON.stringify({
+              data: contributionsData,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            console.log('Failed to cache contributions data');
+          }
         } else {
-          console.log('No contributions data to display');
-          setContributions([]); // 空数组，贡献图不显示
           setContributionsError('Unable to load contribution data');
         }
       } catch (error) {
         console.error('Error fetching GitHub data:', error);
-        setContributions([]); // 出错时也设置空数组
         setContributionsError('Failed to load contribution data');
       } finally {
         setIsLoadingContributions(false);
@@ -188,7 +357,7 @@ export default function Home() {
     };
 
     fetchGitHubData();
-  }, []);
+  }, [isClient]);
 
   const skills = {
     programming: ['Python', 'JavaScript', 'TypeScript', 'Java', 'C++', 'SQL', 'R'],
@@ -421,90 +590,120 @@ export default function Home() {
         </div>
 
         {/* 贡献图 */}
-        {isLoadingContributions ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
-              <p className="text-gray-400 text-sm">Loading GitHub contributions...</p>
-            </div>
-          </div>
-        ) : contributionsError ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-center">
-              <p className="text-gray-400 text-sm mb-2">⚠️ {contributionsError}</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className="text-purple-400 hover:text-purple-300 text-sm underline"
-              >
-                Try refreshing the page
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div
-            className="inline-block overflow-hidden"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(53, 12px)', // 53 columns for weeks
-              gridTemplateRows: 'repeat(7, 12px)',   // 7 rows for days of the week
-              gridAutoFlow: 'column', // Fill columns first (vertical then horizontal)
-              gap: '2px',
-              padding: '10px'
-            }}
-          >
-            {contributions.length > 0 ? (
-              contributions.map((contrib) => (
-                <div
-                  key={contrib.id}
-                  data-tooltip-id="my-github-tooltip"
-                  data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '2px',
-                    backgroundColor:
-                      contrib.intensity === 0 ? '#161b22' :
-                      contrib.intensity === 1 ? '#2d1b69' :
-                      contrib.intensity === 2 ? '#553c9a' :
-                      contrib.intensity === 3 ? '#8b5cf6' :
-                      '#a855f7',
-                    outline: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.outline = '2px solid white';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.outline = 'none';
-                  }}
-                />
-              ))
-            ) : (
-              // Fallback display: placeholder squares if no data
-              Array.from({length: 371}, (_, i) => ( // 53 weeks * 7 days = 371
-                <div
-                  key={`placeholder-${i}`}
-                  data-tooltip-id="my-github-tooltip"
-                  data-tooltip-content="No contribution data"
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '2px',
-                    backgroundColor: '#161b22',
-                    outline: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.outline = '2px solid white';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.outline = 'none';
-                  }}
-                />
-              ))
-            )}
-          </div>
-        )}
+        <div
+          className="inline-block overflow-hidden"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(53, 12px)', // 53 columns for weeks
+            gridTemplateRows: 'repeat(7, 12px)',   // 7 rows for days of the week
+            gridAutoFlow: 'column', // Fill columns first (vertical then horizontal)
+            gap: '2px',
+            padding: '10px'
+          }}
+        >
+          {contributions.length > 0 ? (
+            contributions.map((contrib) => (
+              <div
+                key={contrib.id}
+                data-tooltip-id="my-github-tooltip"
+                data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
+                className="cursor-pointer transition-all duration-200 hover:scale-110"
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '2px',
+                  backgroundColor:
+                    contrib.intensity === 0 ? '#161b22' :
+                    contrib.intensity === 1 ? '#2d1b69' :
+                    contrib.intensity === 2 ? '#553c9a' :
+                    contrib.intensity === 3 ? '#8b5cf6' :
+                    '#a855f7',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.outline = '2px solid white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
+              />
+            ))
+          ) : (
+            // 智能显示：优先使用最新数据，回退到静态数据
+            (() => {
+              // 在服务器端，显示你的真实静态数据，避免水合错误
+              if (!isClient) {
+                return skeletonContributions.map((contrib) => (
+                  <div
+                    key={`ssr-${contrib.id}`}
+                    className="cursor-pointer transition-all duration-200 hover:scale-110"
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '2px',
+                      backgroundColor:
+                        contrib.intensity === 0 ? '#161b22' :
+                        contrib.intensity === 1 ? '#2d1b69' :
+                        contrib.intensity === 2 ? '#553c9a' :
+                        contrib.intensity === 3 ? '#8b5cf6' :
+                        '#a855f7',
+                      outline: 'none'
+                    }}
+                  />
+                ));
+              }
+              
+              // 客户端渲染：优先级：contributions > skeletonContributions
+              const dataToShow = contributions.length > 0 ? contributions : skeletonContributions;
+              
+              if (dataToShow.length > 0) {
+                // 显示真实数据或静态数据
+                return dataToShow.map((contrib) => (
+                  <div
+                    key={contrib.id}
+                    data-tooltip-id="my-github-tooltip"
+                    data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
+                    className="cursor-pointer transition-all duration-200 hover:scale-110"
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '2px',
+                      backgroundColor:
+                        contrib.intensity === 0 ? '#161b22' :
+                        contrib.intensity === 1 ? '#2d1b69' :
+                        contrib.intensity === 2 ? '#553c9a' :
+                        contrib.intensity === 3 ? '#8b5cf6' :
+                        '#a855f7',
+                      outline: 'none',
+                      opacity: contributions.length > 0 ? 1 : 0.9 // 静态数据稍微透明
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.outline = '2px solid white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.outline = 'none';
+                    }}
+                  />
+                ));
+              } else {
+                // 备用：显示空白网格
+                return Array.from({length: 371}, (_, i) => (
+                  <div
+                    key={`fallback-${i}`}
+                    className="cursor-pointer transition-all duration-200 hover:scale-110"
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '2px',
+                      backgroundColor: '#161b22',
+                      outline: 'none'
+                    }}
+                  />
+                ));
+              }
+            })()
+          )}
+        </div>
 
         <Tooltip
           id="my-github-tooltip"
@@ -528,10 +727,10 @@ export default function Home() {
             {githubData ? `${githubData.public_repos} repositories` : 'Loading repositories...'}
           </p>
           <p className="text-sm text-white">
-            {isLoadingContributions 
-              ? 'Loading contributions...' 
-              : contributions.length > 0 
-                ? `${contributions.reduce((sum, contrib) => sum + contrib.count, 0)} contributions in the last year` 
+            {contributions.length > 0 
+              ? `${contributions.reduce((sum, contrib) => sum + contrib.count, 0)} contributions in the last year` 
+              : isLoadingContributions 
+                ? 'GitHub activity' 
                 : 'No contributions data'
             }
           </p>
