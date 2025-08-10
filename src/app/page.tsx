@@ -326,7 +326,7 @@ export default function Home() {
     // 延迟显示整个GitHub模块，创建"浮现"效果
     setTimeout(() => {
       setShowGithubModule(true);
-    }, 300); // 300ms后模块开始出现
+    }, 380); // 300ms后模块开始出现
     
     // 可选：检查localStorage缓存以获取更新的数据
     try {
