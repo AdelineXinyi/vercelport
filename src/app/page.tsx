@@ -139,6 +139,8 @@ export default function Home() {
   const [githubData, setGithubData] = useState<GitHubData | null>(null);
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [showAllExperiences, setShowAllExperiences] = useState(false); 
+  const [isLoadingContributions, setIsLoadingContributions] = useState(true);
+  const [contributionsError, setContributionsError] = useState<string | null>(null); 
   
   const generateContributions = async (): Promise<Contribution[]> => {
     try {
@@ -155,6 +157,9 @@ export default function Home() {
   useEffect(() => {
     const fetchGitHubData = async () => {
       try {
+        setIsLoadingContributions(true);
+        setContributionsError(null);
+        
         // 获取用户基本信息（保持不变）
         const userResponse = await fetch('https://api.github.com/users/AdelineXinyi');
         if (userResponse.ok) {
@@ -171,10 +176,14 @@ export default function Home() {
         } else {
           console.log('No contributions data to display');
           setContributions([]); // 空数组，贡献图不显示
+          setContributionsError('Unable to load contribution data');
         }
       } catch (error) {
         console.error('Error fetching GitHub data:', error);
         setContributions([]); // 出错时也设置空数组
+        setContributionsError('Failed to load contribution data');
+      } finally {
+        setIsLoadingContributions(false);
       }
     };
 
@@ -412,69 +421,90 @@ export default function Home() {
         </div>
 
         {/* 贡献图 */}
-        <div
-          className="inline-block overflow-hidden"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(53, 12px)', // 53 columns for weeks
-            gridTemplateRows: 'repeat(7, 12px)',   // 7 rows for days of the week
-            gridAutoFlow: 'column', // Fill columns first (vertical then horizontal)
-            gap: '2px',
-            padding: '10px'
-          }}
-        >
-          {contributions.length > 0 ? (
-            contributions.map((contrib) => (
-              <div
-                key={contrib.id}
-                data-tooltip-id="my-github-tooltip"
-                data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
-                className="cursor-pointer transition-all duration-200 hover:scale-110"
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '2px',
-                  backgroundColor:
-                    contrib.intensity === 0 ? '#161b22' :
-                    contrib.intensity === 1 ? '#2d1b69' :
-                    contrib.intensity === 2 ? '#553c9a' :
-                    contrib.intensity === 3 ? '#8b5cf6' :
-                    '#a855f7',
-                  outline: 'none'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.outline = '2px solid white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.outline = 'none';
-                }}
-              />
-            ))
-          ) : (
-            // Fallback display: placeholder squares if no data
-            Array.from({length: 371}, (_, i) => ( // 53 weeks * 7 days = 371
-              <div
-                key={`placeholder-${i}`}
-                data-tooltip-id="my-github-tooltip"
-                data-tooltip-content="No contribution data"
-                className="cursor-pointer transition-all duration-200 hover:scale-110"
-                style={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '2px',
-                  backgroundColor: '#161b22',
-                  outline: 'none'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.outline = '2px solid white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.outline = 'none';
-                }}
-              />
-            ))
-          )}
-        </div>
+        {isLoadingContributions ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+              <p className="text-gray-400 text-sm">Loading GitHub contributions...</p>
+            </div>
+          </div>
+        ) : contributionsError ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center">
+              <p className="text-gray-400 text-sm mb-2">⚠️ {contributionsError}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-purple-400 hover:text-purple-300 text-sm underline"
+              >
+                Try refreshing the page
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="inline-block overflow-hidden"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(53, 12px)', // 53 columns for weeks
+              gridTemplateRows: 'repeat(7, 12px)',   // 7 rows for days of the week
+              gridAutoFlow: 'column', // Fill columns first (vertical then horizontal)
+              gap: '2px',
+              padding: '10px'
+            }}
+          >
+            {contributions.length > 0 ? (
+              contributions.map((contrib) => (
+                <div
+                  key={contrib.id}
+                  data-tooltip-id="my-github-tooltip"
+                  data-tooltip-content={getContributionText(contrib.count || 0, contrib.date || '')}
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '2px',
+                    backgroundColor:
+                      contrib.intensity === 0 ? '#161b22' :
+                      contrib.intensity === 1 ? '#2d1b69' :
+                      contrib.intensity === 2 ? '#553c9a' :
+                      contrib.intensity === 3 ? '#8b5cf6' :
+                      '#a855f7',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.outline = '2px solid white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
+                />
+              ))
+            ) : (
+              // Fallback display: placeholder squares if no data
+              Array.from({length: 371}, (_, i) => ( // 53 weeks * 7 days = 371
+                <div
+                  key={`placeholder-${i}`}
+                  data-tooltip-id="my-github-tooltip"
+                  data-tooltip-content="No contribution data"
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '2px',
+                    backgroundColor: '#161b22',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.outline = '2px solid white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
+                />
+              ))
+            )}
+          </div>
+        )}
 
         <Tooltip
           id="my-github-tooltip"
@@ -498,7 +528,12 @@ export default function Home() {
             {githubData ? `${githubData.public_repos} repositories` : 'Loading repositories...'}
           </p>
           <p className="text-sm text-white">
-            {contributions.length > 0 ? `${contributions.reduce((sum, contrib) => sum + contrib.count, 0)} contributions in the last year` : 'No contributions data'}
+            {isLoadingContributions 
+              ? 'Loading contributions...' 
+              : contributions.length > 0 
+                ? `${contributions.reduce((sum, contrib) => sum + contrib.count, 0)} contributions in the last year` 
+                : 'No contributions data'
+            }
           </p>
         </div>
 
