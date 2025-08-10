@@ -191,9 +191,11 @@ export default function Home() {
       company: 'U-M Information and Technology Services - Data Integration',
       role: 'DevOps Intern',
       location: 'Ann Arbor, MN',
-      period: 'May 2025 - August 2025',
+      period: 'May 2025 - Dec 2025 (extended)',
       description: [
-       'To be updated'
+       'Automated OpenAPI validation using Schemathesis across 42+ APIs, reducing swagger debugging from manual inspection to seconds-long validation and enabling rapid error fixes',
+       'Built Python-based Apigee and Denodo CI/CD pipelines with GitHub Actions, reducing 5-step deployment workflows to 2 script executions and automating 53 API endpoint deployments with 90%+ time savings',
+       'Developed Oracle-based API performance monitoring system to analyze response times across multiple partitions, proactively identifying performance issues and generating executive reports for upstream departments'
       ],
       logo: 'https://img.logo.dev/umich.edu?token=pk_L9-3-m3iR3qwyR9kIxfelA',
     },
