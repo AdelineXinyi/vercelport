@@ -2,11 +2,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import ThreeBackground from './ThreeBackground';
+import ThreeBackgroundWrapper from './ThreeBackgroundWrapper';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://xinyi-li.vercel.app'), // 解决了 metadataBase 警告
   title: 'Xinyi Li - Portfolio',
   description: 'Software Engineer & Full-Stack Developer - Personal Portfolio Website',
   keywords: ['portfolio', 'software engineer', 'full-stack developer', 'web developer', 'react', 'next.js', 'xinyi li'],
@@ -58,7 +59,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#8b5cf6" />
       </head>
       <body className={inter.className}>
-        <ThreeBackground />
+        <ThreeBackgroundWrapper />
         <div className="main-content-container">
          {children}
         </div>
