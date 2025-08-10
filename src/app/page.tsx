@@ -848,11 +848,6 @@ export default function Home() {
         }}
       >
         <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-white">Download my latest resume</h3>
-            <p className="text-gray-400">Get a comprehensive overview of my experience and skills</p>
-          </div>
-          
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a 
               href="/resume/resume.pdf" 
@@ -862,6 +857,17 @@ export default function Home() {
               Download PDF Resume
             </a>
           </div>
+        </div>
+
+        <div className="mt-8">
+            <h3 className="text-xl font-semibold text-white mb-4">Preview</h3>
+            <div className="w-full" style={{ aspectRatio: '1 / 1.414' }}>
+                <iframe
+                    src="/resume/resume.pdf#toolbar=0&navpanes=0&scrollbar=0" // 嵌入PDF文件，并隐藏默认工具栏
+                    className="w-full h-full rounded-lg"
+                    style={{ border: 'none' }}
+                />
+            </div>
         </div>
       </div>
     </div>
